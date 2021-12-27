@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from 'react';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
-import {AxesHelper,Scene, WebGLRenderer, PerspectiveCamera, Points, PointsMaterial, BufferGeometry, Float32BufferAttribute, MathUtils, TextureLoader, VertexColors, Group, Clock, LineBasicMaterial, Line} from 'three';
+import {AxesHelper,Scene, WebGLRenderer, PerspectiveCamera, Points, PointsMaterial, BufferGeometry, Float32BufferAttribute, MathUtils, TextureLoader, VertexColors, Group, Clock, LineBasicMaterial, Line, Mesh, SphereBufferGeometry, MeshNormalMaterial} from 'three';
 import styles from './index.module.scss';
 
 const textureLoader = new TextureLoader();
@@ -8,6 +8,7 @@ const texture = textureLoader.load('/react-icon.svg');
 
 const COUNT = 100;
 const DISTANCE = 4;
+const SIZE = 0.1;
 
 const getPositions = () => { 
   const points = new Float32Array(COUNT * 3);
@@ -53,7 +54,7 @@ function App() {
 
   const material = new PointsMaterial({
     'vertexColors': VertexColors,
-    'size': 0.1,
+    'size': SIZE,
     'map': texture,
     'transparent': true,
     'alphaTest': 0.01
@@ -65,11 +66,16 @@ function App() {
   const lineMaterial = new LineBasicMaterial({
     'color': 0x00000,
     'opacity': 0.05,
-    'depthTest': false
+    'depthWrite': false
   });
 
   const lines = new Line(geometry, lineMaterial);
   group.add(lines);
+
+  group.add(new Mesh(
+    new SphereBufferGeometry(0.2, 32),
+    new MeshNormalMaterial()
+  ))
 
   const tick = () => {
     const time = clock.getElapsedTime();
