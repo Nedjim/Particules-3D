@@ -1,19 +1,19 @@
 import React, {useEffect, useRef} from 'react';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
-import {AxesHelper,Scene, WebGLRenderer, PerspectiveCamera, Points, PointsMaterial, BufferGeometry, Float32BufferAttribute, MathUtils, TextureLoader, VertexColors, Group, Clock} from 'three';
+import {AxesHelper,Scene, WebGLRenderer, PerspectiveCamera, Points, PointsMaterial, BufferGeometry, Float32BufferAttribute, MathUtils, TextureLoader, VertexColors, Group, Clock, LineBasicMaterial, Line} from 'three';
 import styles from './index.module.scss';
 
 const textureLoader = new TextureLoader();
 const texture = textureLoader.load('/react-icon.svg');
 
 const COUNT = 100;
+const DISTANCE = 4;
 
-const getPositions = () => {  
-  const distance = 2;
+const getPositions = () => { 
   const points = new Float32Array(COUNT * 3);
 
   for(let i = 0; i < points.length; i++) {
-    points[i] = MathUtils.randFloatSpread(distance / 2);
+    points[i] = MathUtils.randFloatSpread(DISTANCE / 2);
   }
 
   return new Float32BufferAttribute(points, 3);
@@ -62,6 +62,15 @@ function App() {
   const group = new Group();
   group.add(points);
 
+  const lineMaterial = new LineBasicMaterial({
+    'color': 0x00000,
+    'opacity': 0.05,
+    'depthTest': false
+  });
+
+  const lines = new Line(geometry, lineMaterial);
+  group.add(lines);
+
   const tick = () => {
     const time = clock.getElapsedTime();
 
@@ -98,7 +107,7 @@ function App() {
     scene.add(group);
 
     renderer.setSize(width, height);
-    renderer.setClearColor('0x000000', 0);
+    renderer.setClearColor(0x000000, 0);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   
     ref.current.appendChild( renderer.domElement );
