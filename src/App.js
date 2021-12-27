@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from 'react';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
-import {AxesHelper,Scene, WebGLRenderer, PerspectiveCamera, Points, PointsMaterial, BufferGeometry, Float32BufferAttribute, MathUtils, TextureLoader, VertexColors} from 'three';
+import {AxesHelper,Scene, WebGLRenderer, PerspectiveCamera, Points, PointsMaterial, BufferGeometry, Float32BufferAttribute, MathUtils, TextureLoader, VertexColors, Group} from 'three';
 import styles from './index.module.scss';
 
 const textureLoader = new TextureLoader();
@@ -8,8 +8,7 @@ const texture = textureLoader.load('/react-icon.svg');
 
 const COUNT = 100;
 
-const getPositions = () => {
-  
+const getPositions = () => {  
   const distance = 2;
   const points = new Float32Array(COUNT * 3);
 
@@ -59,9 +58,12 @@ function App() {
     'alphaTest': 0.01
   });
   const points = new Points(geometry, material);
+  const group = new Group();
+  group.add(points);
 
   const tick = () => {
     renderer.render(scene, camera);
+    group.rotateY(0.001 * Math.PI);
     controls.update();
 
     requestAnimationFrame(tick);
@@ -89,7 +91,7 @@ function App() {
     camera.position.x = 0.5;
   
     scene.add(camera);
-    scene.add(points);
+    scene.add(group);
 
     renderer.setSize(width, height);
     renderer.setClearColor('0x000000', 0);
