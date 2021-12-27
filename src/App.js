@@ -1,15 +1,17 @@
 import React, {useEffect, useRef} from 'react';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
-import {AxesHelper,Scene, WebGLRenderer, PerspectiveCamera, Points, PointsMaterial, BufferGeometry, Float32BufferAttribute, MathUtils, TextureLoader} from 'three';
+import {AxesHelper,Scene, WebGLRenderer, PerspectiveCamera, Points, PointsMaterial, BufferGeometry, Float32BufferAttribute, MathUtils, TextureLoader, VertexColors} from 'three';
 import styles from './index.module.scss';
 
 const textureLoader = new TextureLoader();
 const texture = textureLoader.load('/react-icon.svg');
 
+const COUNT = 100;
+
 const getPositions = () => {
-  const count = 100;
+  
   const distance = 2;
-  const points = new Float32Array(count * 3);
+  const points = new Float32Array(COUNT * 3);
 
   for(let i = 0; i < points.length; i++) {
     points[i] = MathUtils.randFloatSpread(distance / 2);
@@ -17,6 +19,16 @@ const getPositions = () => {
 
   return new Float32BufferAttribute(points, 3);
 };
+
+const getColors = () => {
+  const colors = new Float32Array(COUNT * 3);
+
+  for(let i = 0; i < colors.length; i++) {
+    colors[i] = Math.random();
+  }
+
+  return new Float32BufferAttribute(colors, 3);
+}
 
 function App() {
   const ref = useRef(null);
@@ -37,9 +49,10 @@ function App() {
 
   const geometry = new BufferGeometry();
   geometry.setAttribute('position', getPositions());
+  geometry.setAttribute('color', getColors());
 
   const material = new PointsMaterial({
-    'color': '#3560a6',
+    'vertexColors': VertexColors,
     'size': 0.1,
     'map': texture,
     'transparent': true,
