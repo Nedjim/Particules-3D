@@ -1,42 +1,56 @@
 import React, {useEffect, useRef} from 'react';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
-import {AxesHelper, Scene, WebGLRenderer, PerspectiveCamera, Mesh, BoxBufferGeometry, MeshNormalMaterial} from 'three';
+import {AxesHelper,Scene, WebGLRenderer, PerspectiveCamera, Points, PointsMaterial, BufferGeometry, Float32BufferAttribute, MathUtils, TextureLoader} from 'three';
+import styles from './index.module.scss';
+
+const textureLoader = new TextureLoader();
+const texture = textureLoader.load('/react-icon.svg');
+
+const getPositions = () => {
+  const count = 100;
+  const distance = 2;
+  const points = new Float32Array(count * 3);
+
+  for(let i = 0; i < points.length; i++) {
+    points[i] = MathUtils.randFloatSpread(distance / 2);
+  }
+
+  return new Float32BufferAttribute(points, 3);
+};
 
 function App() {
   const ref = useRef(null);
   const scene = new Scene();
-  const renderer = new WebGLRenderer({'antialias': true}); // antillias evite la pixélisation des bords
+  const renderer = new WebGLRenderer({
+    'antialias': true,
+    'alpha': true,
+  });
 
   const width = window.innerWidth - 20;
   const height =  window.innerHeight - 20;
-  const cameraFieldOfView = 75; // regarder plus ou moin large (%)
-  const cameraAspect = width / height; // ration de l'image lié au dimensions de la fenetre
-  const near = 0.01; // intervalles de visibilité des éléments
+  const cameraFieldOfView = 75;
+  const cameraAspect = width / height;
+  const near = 0.01;
   const far = 1000;
   const camera = new PerspectiveCamera(cameraFieldOfView, cameraAspect, near, far);
-
-  // 
   const controls = new OrbitControls(camera, renderer.domElement);
 
+  const geometry = new BufferGeometry();
+  geometry.setAttribute('position', getPositions());
 
-  // ensemble de points qui permet de faire une forme
-  const geometry = new BoxBufferGeometry(1, 1, 1); // largeur, hauteur, profondeur
-  // texture de la forme , color face par rapport à la position de la camera
-  const material =  new MeshNormalMaterial();
-  const cube = new Mesh(geometry, material); // geométrie + material 
+  const material = new PointsMaterial({
+    'color': '#3560a6',
+    'size': 0.1,
+    'map': texture,
+    'transparent': true,
+    'alphaTest': 0.01
+  });
+  const points = new Points(geometry, material);
 
   const tick = () => {
-    // rendu par rapport à la vue de la caméra
     renderer.render(scene, camera);
     controls.update();
 
-    // // maj de la position de la camera
-    // camera.position.x += 0.01;
-
-    // // camera cible le centre de la scene (x, y, z)
-    // camera.lookAt(0, 0, 0);
-
-    // permet d'avoir le rendu en permanance
     requestAnimationFrame(tick);
   };
 
@@ -57,14 +71,15 @@ function App() {
   useEffect(() => {
     scene.add(new AxesHelper());
     
-    // position de recule de la caméra
     camera.position.z = 2;
     camera.position.y = 0.5;
     camera.position.x = 0.5;
+  
     scene.add(camera);
-    scene.add(cube);
+    scene.add(points);
 
     renderer.setSize(width, height);
+    renderer.setClearColor('0x000000', 0);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   
     ref.current.appendChild( renderer.domElement );
@@ -72,7 +87,7 @@ function App() {
     tick();
   }, []);
   
-  return <section ref={ref} />
+  return <section className={styles.wrapper} ref={ref} />
 }
 
 export default App;
