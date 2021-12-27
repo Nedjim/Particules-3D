@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from 'react';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
-import {AxesHelper,Scene, WebGLRenderer, PerspectiveCamera, Points, PointsMaterial, BufferGeometry, Float32BufferAttribute, MathUtils, TextureLoader, VertexColors, Group} from 'three';
+import {AxesHelper,Scene, WebGLRenderer, PerspectiveCamera, Points, PointsMaterial, BufferGeometry, Float32BufferAttribute, MathUtils, TextureLoader, VertexColors, Group, Clock} from 'three';
 import styles from './index.module.scss';
 
 const textureLoader = new TextureLoader();
@@ -31,6 +31,7 @@ const getColors = () => {
 
 function App() {
   const ref = useRef(null);
+  const clock = new Clock();
   const scene = new Scene();
   const renderer = new WebGLRenderer({
     'antialias': true,
@@ -62,8 +63,11 @@ function App() {
   group.add(points);
 
   const tick = () => {
+    const time = clock.getElapsedTime();
+
+    group.rotation.y = time * 0.1;
+
     renderer.render(scene, camera);
-    group.rotateY(0.001 * Math.PI);
     controls.update();
 
     requestAnimationFrame(tick);
