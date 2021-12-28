@@ -1,5 +1,5 @@
 import React, {memo, useEffect, useRef} from 'react';
-import {initGraph, handleResize} from './Graph';
+import {initGraph, clearGraph, handleResize} from './Graph';
 import {renderer} from './Graph/constants';
 import styles from './index.module.scss';
 
@@ -11,8 +11,14 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const container = ref.current;
+  
     initGraph();
-    ref.current.appendChild( renderer.domElement );
+    container.appendChild( renderer.domElement );
+
+    return function cleanup () {
+      clearGraph(container);
+    }
   }, []);
   
   return <section className={styles.wrapper} ref={ref} />

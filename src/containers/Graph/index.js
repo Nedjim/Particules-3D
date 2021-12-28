@@ -17,10 +17,14 @@ export function initGraph() {
   handleRotation();
 }
 
+export function clearGraph(container) {
+  // container.removeChild();
+}
+
 export function handleResize() {
   const pixelRatio = Math.min(window.devicePixelRatio, 2);
-  const w = window.innerWidth - 20;
-  const h =  window.innerHeight - 20;
+  const w = window.innerWidth;
+  const h =  window.innerHeight;
 
   camera.aspect = w / h;
 
@@ -32,7 +36,7 @@ export function handleResize() {
 const handleRotation = () => {
   const time = clock.getElapsedTime();
 
-  group.rotation.y = time * 0.1;
+  group.rotation.y = time * 0.3;
   renderer.render(scene, camera);
   controls.update();
 
